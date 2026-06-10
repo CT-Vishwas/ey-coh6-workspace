@@ -1,22 +1,23 @@
+'''
+Author: Vishwas K Singh
+Date: 2024-06-17
+Email: vishwas@cloudthat.com
+Description: This script processes a log file to identify suspicious email addresses based on failed login attempts. It reads the log file, counts the number of failed login attempts for each email address, and marks those with two or more failed attempts as suspicious. The results are displayed in a formatted table.
+'''
 from  dataclasses import dataclass
-# Read the files
-# data classes
-# dict of login counts
-# mark 
-
 
 @dataclass
 class Event:
+    '''Data class to represent a log event'''
     date: str
     time: str
-    success: bool
+    success: bool = False
     email: str
     ipaddress: str
 
-count_dict = dict()
 
 def data_reader(file_path):
-
+    '''Generator function to read the log file and yield Event objects'''
     try:
         with open(file_path,"rt") as fh:
             while True:
@@ -31,14 +32,14 @@ def data_reader(file_path):
     except FileNotFoundError:
         print(f"{file_path} does not exist")
 
-
-
 def main():
+    '''Main function to process the log file and identify suspicious emails'''
+    count_dict = dict()
     file_path = r"C:\Users\VishwasKSingh\Workspace\ey-coh6-workspace\data\susp_log"
     for event in data_reader(file_path):
         if not event.success:
             count_dict[event.email] = count_dict.get(event.email,0) + 1
-    # print(count_dict)
+
     print("Suspicious Emails:")
 
     print(f"|{'Email':<30}|{'Failed Logins':<20}|{'Marked Suspicious':<20}|")
@@ -53,5 +54,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
