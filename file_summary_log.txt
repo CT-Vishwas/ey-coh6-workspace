@@ -1,0 +1,18 @@
+File: 02-printing.py
+Summary Timestamp: 2026-06-11 10:52 AM
+Number of Lines: 3
+Number of Words: 4
+Number of Characters: 95
+Number of Punctuations: 57
+Number of Vowels: 6
+Number of Digits: 10
+----------------------------------------
+File: demo_func.py
+Summary Timestamp: 2026-06-11 10:53 AM
+Number of Lines: 34
+Number of Words: 81
+Number of Characters: 720
+Number of Punctuations: 162
+Number of Vowels: 120
+Number of Digits: 38
+----------------------------------------

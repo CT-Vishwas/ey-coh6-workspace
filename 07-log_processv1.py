@@ -65,5 +65,6 @@ for line in data:
     d1['ip_address'] = parts[7]
     
     extracted_data.append(d1)
+print(extracted_data)
 
 
