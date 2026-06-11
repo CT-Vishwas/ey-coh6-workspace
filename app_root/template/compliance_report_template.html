@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Compliance Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-800 antialiased">
+
+    <div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-3xl font-semibold uppercase tracking-[0.2em] text-slate-900 sm:text-4xl">{{ company_title }}</h1>
+        </div>
+
+        <div class="my-8 border-t-2 border-slate-200"></div>
+
+        <div class="grid gap-8 lg:grid-cols-2">
+            <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div class="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Compliance Status Counts</div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-200 text-sm">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left font-semibold text-slate-600">Status</th>
+                                <th class="px-4 py-3 text-right font-semibold text-slate-600">Count</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 bg-white">
+                            {% for status, count in status_counts.items() %}
+                            <tr>
+                                <td class="px-4 py-3 text-slate-700">{{ status }}</td>
+                                <td class="px-4 py-3 text-right text-slate-700">{{ count }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div class="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Average Compliance Score by Department</div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-200 text-sm">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left font-semibold text-slate-600">Department</th>
+                                <th class="px-4 py-3 text-right font-semibold text-slate-600">Score</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 bg-white">
+                            {% for dept, score in department_scores.items() %}
+                            <tr>
+                                <td class="px-4 py-3 text-slate-700">{{ dept }}</td>
+                                <td class="px-4 py-3 text-right text-slate-700">{{ "{:.1f}".format(score) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="my-10 border-t border-slate-200"></div>
+
+        <div class="rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center shadow-sm">
+            <div class="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Chart of Compliance Score By Department</div>
+            <img src="data:image/png;base64,{{ chart }}" class="mx-auto h-72 w-72 rounded-3xl object-contain" alt="compliance scores">
+        </div>
+
+        <div class="my-10 border-t border-slate-200"></div>
+
+        <div class="grid gap-4 text-sm text-slate-600 sm:grid-cols-2">
+            <div class="rounded-2xl bg-white p-4 shadow-sm">
+                <span class="block text-xs uppercase tracking-[0.2em] text-slate-500">Report generated on</span>
+                <p class="mt-2 text-base font-medium text-slate-900">{{ generation_time }}</p>
+            </div>
+            <div class="rounded-2xl bg-white p-4 shadow-sm">
+                <span class="block text-xs uppercase tracking-[0.2em] text-slate-500">Report By</span>
+                <p class="mt-2 text-base font-medium text-slate-900">{{ reporter_name }}</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

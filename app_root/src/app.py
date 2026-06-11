@@ -4,49 +4,33 @@ import os
 from .loading import load_data
 import pandas as pd
 import matplotlib.pyplot as plt
-from .reporting import create_compliance_report, ReportData
+from .reporting import create_compliance_report, ReportData, image_to_base64
+from config import load_config, set_path
 
-def load_config(config_path: Path) -> dict:
-    '''
-    Loads the configuration from the given JSON file path and returns it as a dictionary.
-    '''
-    try:
-        with open(config_path, 'r') as fh:
-            config = json.load(fh)
-            return config
-    except FileNotFoundError:
-        print(f"Configuration file '{config_path}' not found.")
-        return {}
-    except json.JSONDecodeError:
-        print(f"Error decoding JSON from the configuration file '{config_path}'.")
-        return {}
-    
+CONFIG_PATH = Path(__file__) / "env.json"
+APP_FILE = "cap_app_inventory.csv"
+COMPLIANCE_STATUS_FILE = "cap_compliance_status.csv"
+GAP_LOG_FILE ="cap_gap_logs.csv"
+STAKE_HOLDERS_FILE = "cap_stake_holders.csv"
+
 
 if __name__ == "__main__":
-    config_path = Path(__file__).parent.parent/"config"/"env.json"
-    # config_path = os.path.abspath(os.path.join(os.path.pardir, "config", "env.json"))
-    print(f"Loading configuration from: {config_path}")
-
-    if not config_path.exists():
-        print(f"Configuration file '{config_path}' does not exist.")
+    print(f"Loading configuration from: {CONFIG_PATH}")
+    config = {}
+    if not CONFIG_PATH.exists():
+        print(f"Configuration file '{CONFIG_PATH}' does not exist.")
     else:
-        config = load_config(config_path)
+        config = load_config(CONFIG_PATH)
         if config:
             print("Configuration loaded successfully:")
             print(json.dumps(config, indent=4))
         else:
             print("Failed to load configuration.")
-    
-    data_dir = config.get("data_dir", "data")
-    data_path = Path(__file__).parent.parent / data_dir
-    print(f"Data directory path: {data_dir}")
-    if not data_path.exists():
-        print(f"Data directory '{data_path}' does not exist.")
-    else:
-        print(f"Data directory '{data_path}' exists.")
+
+    data_path, template, output_html, output_pdf = set_path(config.get("data_dir","data"),config.get("template_dir","template"),config.get("outputs_dir","outputs"))
 
     # Loading the data
-    app_inventory_path = data_path / "cap_app_inventory.csv"
+    app_inventory_path = data_path / APP_FILE
     app_df = load_data(app_inventory_path)
     if app_df is not None:
         print("Data loaded successfully:")
@@ -54,18 +38,18 @@ if __name__ == "__main__":
     else:
         print("Failed to load data.")
 
-    compiance_path = data_path / "cap_compliance_status.csv"
-    compiance_df = load_data(compiance_path)
-    if compiance_df is not None:
+    compliance_path = data_path / COMPLIANCE_STATUS_FILE
+    compliance_df = load_data(compliance_path)
+    if compliance_df is not None:
         print("Data loaded successfully:")
-        print(compiance_df.head())
+        print(compliance_df.head())
     else:
         print("Failed to load data.")
 
     # 2. Doing Analysis
     # Combine using innerjoin
     print("merged_df: ")
-    merged_df = pd.merge(app_df, compiance_df, how="inner")
+    merged_df = pd.merge(app_df, compliance_df, how="inner")
     print(merged_df.head())
 
 
@@ -77,16 +61,11 @@ if __name__ == "__main__":
     print(merged_df.info())
 
 
-    scores = merged_df[["Department","Compliance_Score"]]
-    scores.plot(kind="pie", y="Compliance_Score")
-    plt.savefig("./outputs/compliance_scores.png")
-
-
     plt.figure(figsize=(8, 8))
     merged_df.groupby('Department')['Compliance_Score'].mean().plot(kind='pie', autopct='%1.1f%%')
     plt.title('Average Compliance Score by Department')
     plt.ylabel('')
-    plt.savefig('./outputs/average_compliance_score_by_department.png')
+    plt.savefig(output_html.parent / 'average_compliance_score_by_department.png')
 
     # 3. Generated a report
     try:
@@ -94,9 +73,10 @@ if __name__ == "__main__":
             company_title="Company Title",
             status_counts=compliance_statuses.to_dict(),
             department_scores=merged_df.groupby('Department')['Compliance_Score'].mean().to_dict(),
-            generation_time=pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S"),
-            reporter_name="Reporter"
+            generation_time=pd.Timestamp.now().strftime("%Y-%m-%d %I:%M %p"),
+            reporter_name="Reporter",
+            chart= image_to_base64(output_html.parent / 'average_compliance_score_by_department.png')
         )
-        create_compliance_report(report_data)
+        create_compliance_report(report_data, template=template, report_path=output_html, report_pdf=output_pdf)
     except Exception as e:
         print(f"An error occurred while generating the report: {e}")
