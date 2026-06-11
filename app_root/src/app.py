@@ -1,7 +1,7 @@
 from pathlib import Path
 import json
 import os
-import csv
+from .loading import load_data
 
 def load_config(config_path: Path) -> dict:
     '''
@@ -33,22 +33,27 @@ if __name__ == "__main__":
             print(json.dumps(config, indent=4))
         else:
             print("Failed to load configuration.")
-
-    csv_file = os.path.abspath(os.path.join(os.path.pardir,os.path.pardir, config.get("data_path", ""), "sample.csv")) 
-    print(f"CSV file path: {csv_file}")
-    if not os.path.exists(csv_file) and not os.path.isfile(csv_file):
-        print(f"CSV file '{csv_file}' does not exist or is not a valid file.")
+    
+    data_dir = config.get("data_dir", "data")
+    data_path = Path(__file__).parent.parent / data_dir
+    print(f"Data directory path: {data_dir}")
+    if not data_path.exists():
+        print(f"Data directory '{data_path}' does not exist.")
     else:
-        try:
-            with open(csv_file, 'r') as fh:
-                reader = csv.DictReader(fh)
-                # print(reader.fieldnames)
-                for field in reader.fieldnames:
-                    print(f"|{field:<30}",end="")
-                print("\n"+"-" * 50)
-                for row in reader:
-                    for field in reader.fieldnames:
-                        print(f"|{row[field]:<30}",end="")
-                    print()
-        except FileNotFoundError:
-            print(f"CSV file '{csv_file}' not found.")
+        print(f"Data directory '{data_path}' exists.")
+
+    app_inventory_path = data_path / "cap_app_inventory.csv"
+    app_df = load_data(app_inventory_path)
+    if app_df is not None:
+        print("Data loaded successfully:")
+        print(app_df.head())
+    else:
+        print("Failed to load data.")
+
+    compiance_path = data_path / "cap_compliance_status.csv"
+    compiance_df = load_data(compiance_path)
+    if compiance_df is not None:
+        print("Data loaded successfully:")
+        print(compiance_df.head())
+    else:
+        print("Failed to load data.")

@@ -27,3 +27,6 @@ if __name__ == "__main__":
     print("Email ids of the senders:")
     for email in emails:
         print(email)
+
+
+# Output:
