@@ -14,3 +14,7 @@
 2. [Datetime](https://docs.python.org/3/library/datetime.html)
 3. [Date Time Format Codes](https://docs.python.org/3/library/datetime.html#format-codes)
 4. [Operating System](https://docs.python.org/3/library/os.html)
+5. [Regular Expressions](https://docs.python.org/3/library/re.html)
+6. [pathlib](https://docs.python.org/3/library/pathlib.html)
+7. [sys](https://docs.python.org/3/library/sys.html)
+8. [json](https://docs.python.org/3/library/json.html)
